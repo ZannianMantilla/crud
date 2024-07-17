@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>CRUD</title>
+</head>
+<body>
+    <form>
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" autocomplete="off">
+        <label for="apellido">Apellido:</label>
+        <input type="text" id="apellido" name="apellido" autocomplete="off">
+        <label for="telefono">Teléfono:</label>
+        <input type="tel" id="telefono" name="telefono" autocomplete="off">
+        <label for="direccion">Dirección:</label>
+        <input type="text" id="direccion" name="direccion" autocomplete="off">
+        <label for="documento">Documento de identidad:</label>
+        <input type="text" id="documento" name="documento" autocomplete="off">
+        <label for="tipo_documento">Tipo de documento:</label>
+        <select id="tipo_documento" name="tipo_documento">
+            <option value="">Seleccione un tipo de documento</option>
+            <option value="CC">Cédula de Ciudadanía</option>
+            <option value="TI">Tarjeta de Identidad</option>
+            <option value="CE">Cédula de Extranjería</option>
+            <option value="PS">Pasaporte</option>
+        </select>
+        <div>
+            <input type="checkbox" id="politicas">
+            <label for="politicas">Acepta las condiciones de uso</label> 
+        </div>
+        <button type="submit" id="boton">Enviar Formulario</button>
+    </form>
+    <script src="app.js"></script>
+</body>
+</html>

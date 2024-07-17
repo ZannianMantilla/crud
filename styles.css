@@ -1,0 +1,44 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+form{
+    margin: 0 auto;
+    max-width: 450px;
+    width: 450px;
+    background-color: #f2f2f2;
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    gap: 14px;
+}
+input, select, button{
+    padding: 12px;
+    border: solid 1px #cecece;
+    border-radius: 8px;
+    outline: none;  
+}
+button{
+    background-color: #383838;
+    color: #cecece;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    transition: 0.5s;
+}
+
+button:hover{
+    color: #383838;
+    background-color: #cecece;
+}
+
+.error{
+    border: solid 1px red;
+    transition: 0.4s;
+}
+
+.succes{
+    border: solid 1px rgb(0, 255, 128);
+    transition: 0.4s;
+}
