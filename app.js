@@ -1,3 +1,9 @@
+import { correo } from "./modulo.js";
+import { validarInput } from "./modulo.js";
+import { removerError } from "./modulo.js";
+import { agregarSucces } from "./modulo.js";
+
+
 const $formulario = document.querySelector("form");
 const campos = [
   document.querySelector("#nombre"),
@@ -9,23 +15,6 @@ const campos = [
   document.querySelector("#email")
 ];
 
-const agregarSucces = (elemento) => {
-  elemento.addEventListener("input", function() {
-    if (elemento.value != '') {
-      elemento.classList.add("succes");
-      elemento.classList.remove("error");
-    }
-  });
-};
-
-const removerError = (elemento) => {  
-  elemento.addEventListener("blur", function() {
-    if (elemento.value === '') {
-      elemento.classList.add("error");
-      elemento.classList.remove("succes");
-    }
-  });
-};
 
 campos.forEach(agregarSucces);
 campos.forEach(removerError);
@@ -78,32 +67,6 @@ sube.addEventListener("keyup", function(event) {
 });
 
 $formulario.addEventListener("submit", validar);
-
-const validarInput = (elemento, tipo) => {
-  elemento.addEventListener("keypress", function(event) {
-    const keycode = event.which || event.keyCode;
-    if (tipo === "numero" && !(keycode >= 48 && keycode <= 57)) {
-      event.preventDefault();
-    } else if (tipo === "letra") {
-      letras(event, elemento);
-    }
-  });
-};
-
-const correo = (elemento) => {
-  elemento.addEventListener("blur", function() {
-    let expresion = /^[\w-._]+@[\w-._]+(\.[a-zA-Z]{2,3}){1,2}$/;
-    let resultado = expresion.test(elemento.value);
-    console.log("Resultado de la validación:", resultado);
-    if (resultado){
-      elemento.classList.remove("error")
-      elemento.classList.add("succes")
-    } else{
-      elemento.classList.add("error")
-      elemento.classList.remove("succes")
-    }
-  });
-}
 
 correo(document.querySelector("#email"));
 
