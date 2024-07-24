@@ -5,7 +5,8 @@ const campos = [
   document.querySelector("#telefono"),
   document.querySelector("#direccion"),
   document.querySelector("#documento"),
-  document.querySelector("#tipo_documento")
+  document.querySelector("#tipo_documento"),
+  document.querySelector("#email")
 ];
 
 const agregarSucces = (elemento) => {
@@ -25,8 +26,6 @@ const removerError = (elemento) => {
     }
   });
 };
-
-
 
 campos.forEach(agregarSucces);
 campos.forEach(removerError);
@@ -91,12 +90,30 @@ const validarInput = (elemento, tipo) => {
   });
 };
 
+const correo = (elemento) => {
+  elemento.addEventListener("blur", function() {
+    let expresion = /^[\w-._]+@[\w-._]+(\.[a-zA-Z]{2,3}){1,2}$/;
+    let resultado = expresion.test(elemento.value);
+    console.log("Resultado de la validación:", resultado);
+    if (resultado){
+      elemento.classList.remove("error")
+      elemento.classList.add("succes")
+    } else{
+      elemento.classList.add("error")
+      elemento.classList.remove("succes")
+    }
+  });
+}
+
+correo(document.querySelector("#email"));
+
 const letras = (event, elemento) => {
   let regex = /^[A-Za-zÀ-Ýà-ý\s]+$/;
   if (!regex.test(elemento.value + event.key)) {
     event.preventDefault();
   }
 };
+
 
 validarInput(document.querySelector("#nombre"), "letra");
 validarInput(document.querySelector("#apellido"), "letra");

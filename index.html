@@ -7,7 +7,7 @@
     <title>CRUD</title>
 </head>
 <body>
-    <form>
+    <form class="form" novalidate>
         <label for="nombre">Nombre:</label>
         <input type="text" id="nombre" name="nombre" autocomplete="off">
         <label for="apellido">Apellido:</label>
@@ -16,6 +16,8 @@
         <input type="tel" id="telefono" name="telefono" autocomplete="off">
         <label for="direccion">Dirección:</label>
         <input type="text" id="direccion" name="direccion" autocomplete="off">
+        <label for="email">Email</label>
+        <input type="text" id="email" autocomplete="off">
         <label for="documento">Documento de identidad:</label>
         <input type="text" id="documento" name="documento" autocomplete="off">
         <label for="tipo_documento">Tipo de documento:</label>
@@ -33,5 +35,6 @@
         <button type="submit" id="boton">Enviar Formulario</button>
     </form>
     <script src="app.js"></script>
+    <script type="module" src="modulo.js"></script>
 </body>
 </html>
