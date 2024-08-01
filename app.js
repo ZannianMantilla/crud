@@ -1,84 +1,118 @@
-import { correo } from "./modulo.js";
-import { validarInput } from "./modulo.js";
-import { removerError } from "./modulo.js";
-import { agregarSucces } from "./modulo.js";
-
+import isGmail from "./modulos/isGmail.js";
+import is_number from "./modulos/is_number.js";
+import letras from "./modulos/letras.js";
+import remover from "./modulos/remover.js";
+import is_valid from "./modulos/is_valid.js";
 
 const $formulario = document.querySelector("form");
-const campos = [
-  document.querySelector("#nombre"),
-  document.querySelector("#apellido"),
-  document.querySelector("#telefono"),
-  document.querySelector("#direccion"),
-  document.querySelector("#documento"),
-  document.querySelector("#tipo_documento"),
-  document.querySelector("#email")
-];
+const nombre = document.querySelector("#nombre");
+const apellidos = document.querySelector("#apellidos");
+const telefono = document.querySelector("#telefono");
+const direccion = document.querySelector("#direccion");
+const tipo = document.querySelector("#tipo");
+const documento = document.querySelector("#documento");
+const politicas = document.querySelector("#politicas");
+const correo = document.querySelector(  "#email");
+const boton = document.querySelector("#boton");
 
 
-campos.forEach(agregarSucces);
-campos.forEach(removerError);
-
-const $checkbox = document.querySelector("#politicas"); 
-const $boton = document.querySelector("#boton"); 
-
-$checkbox.addEventListener('change', function() {
-  if ($checkbox.checked) {
-    $boton.removeAttribute('disabled');
-  } else {
-    $boton.setAttribute('disabled', true);
-  }
-});
-
-const validar = () => {
-  event.preventDefault()
-  let hayErrores = false;
-  campos.forEach((campo) => {
-    if (campo.value === '') {
-      campo.classList.add("error");
-      hayErrores = true;
-    } else {
-      campo.classList.remove("error");
-      campo.classList.add("succes");
+const cantidad = (elemento) => {
+    let valor = elemento.value.length === 10;
+    if (valor) {
+        alert("correcto")
+        elemento.classList.add("correcto")
     }
-  }); 
+}
 
-  if (hayErrores ||!$checkbox.checked) { 
-    alert('Por favor, complete todos los campos obligatorios y active la checkbox.');
-  } else {
-    $formulario.submit();
-  }
-};
+const documentos = () =>{
+    const fragmento = document.createDocumentFragment();
+    fetch('http://localhost:3000/documents')
+    .then((response) => response.json())
+    .then((data) => {
+        data.forEach(element => {
+            console.log(element);
+            let option = document.createElement("option");
+            option.value = element.id;
+            option.textContent = element.name;
+            fragmento.appendChild(option)
+        });
+        tipo.appendChild(fragmento)
+    });
+}
 
-const presionado = document.querySelector("#nombre");
-const baja = document.querySelector("#nombre");
-const sube = document.querySelector("#nombre");
-
-presionado.addEventListener("keypress", function(event) {
-  console.log("Nombre - Keypress:", event);
+addEventListener("DOMContentLoaded", (event)=>{
+    documentos()
+    if (!politicas.checked) {
+        boton.setAttribute("disable","");
+    }
+});
+politicas.addEventListener("change", function(e){
+    console.log(e.target.checked);
+    if (e.target.checked) {
+        boton.removeAttribute("disabled")
+    }
 });
 
-baja.addEventListener("keydown", function(event) {
-  console.log("Nombre - Keydown:", event);
+$formulario.addEventListener("submit" , (event)=>{
+    let response = is_valid(event, "form [required]");
+    if (response) {
+        const data ={
+            first_name: nombre.value,
+            last_name: tipo.value,
+            address: direccion.value,
+            type_id: tipo.value,
+            email: correo.value,
+            phone: telefono.value,
+            document: documento.value,
+        }
+        fetch('http://localhost:3000/users',{
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+            },
+        })
+        .then((response) => response.json())
+        .then((json) =>{
+            nombre.value="";
+            apellidos.value="";
+            direccion.value="";
+            telefono.value="";
+            tipo.value="";
+            documento.value="";
+            correo.value="";
+            politicas.checked = false;
+        })
+    }else{
+        alert("Rellena Los Campos")
+    }
+});
+nombre.addEventListener("keypress", (event) => {
+    remover(event, nombre);
+});
+apellidos.addEventListener("blur", (event) => {
+    remover(event, apellidos);
+});
+tipo.addEventListener("change", (event) => {
+    remover(event, tipo);
+});
+telefono.addEventListener("blur", (event) => {
+    remover(event, telefono);
 });
 
-sube.addEventListener("keyup", function(event) {
-  console.log("Nombre - Keyup:", event);
+documento.addEventListener("keypress", is_number);
+telefono.addEventListener("keypress", is_number);
+
+nombre.addEventListener("keypress", letras );
+apellidos.addEventListener("keypress", (event) => {
+    letras(event, apellidos);
 });
-
-$formulario.addEventListener("submit", validar);
-
-correo(document.querySelector("#email"));
-
-const letras = (event, elemento) => {
-  let regex = /^[A-Za-zÀ-Ýà-ý\s]+$/;
-  if (!regex.test(elemento.value + event.key)) {
-    event.preventDefault();
-  }
-};
-
-
-validarInput(document.querySelector("#nombre"), "letra");
-validarInput(document.querySelector("#apellido"), "letra");
-validarInput(document.querySelector("#telefono"), "numero");
-validarInput(document.querySelector("#documento"), "numero");
+correo.addEventListener("blur", (event) => {
+    isGmail(event, correo);
+});
+direccion.addEventListener("blur", (event) => {
+    remover(event, direccion);
+});
+documento.addEventListener("blur", (event)=> {
+    remover(event, documento);
+});

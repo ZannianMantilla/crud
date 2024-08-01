@@ -2,43 +2,49 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    
 }
 form{
-    margin: 0 auto;
     max-width: 450px;
     width: 450px;
+    margin: 0 auto;
     background-color: #f2f2f2;
+    padding: 30px;
     display: flex;
     flex-direction: column;
-    padding: 30px;
-    gap: 14px;
+    gap: 10px;
 }
-input, select, button{
+.form__group{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+input , select , button{
+    padding: 12px;
+    border: solid 1px #adadad;
+    border-radius: 8px;
+    outline: none;
+}
+button{
+    font-weight: 600;
+    font-size: 15px;
     padding: 12px;
     border: solid 1px #cecece;
     border-radius: 8px;
-    outline: none;  
-}
-button{
-    background-color: #383838;
-    color: #cecece;
+    background-color: rgb(53, 52, 52);
+    color: #dbd7d7;
     cursor: pointer;
-    font-size: 16px;
-    font-weight: 700;
-    transition: 0.5s;
+    transition: all 0.5s;
 }
-
 button:hover{
-    color: #383838;
-    background-color: #cecece;
+    background-color: rgb(184, 180, 180);
+    color: #383737;
 }
-
 .error{
-    border: solid 1px red;
-    transition: 0.4s;
+    border: solid 1px #e01919;
+    transition: 0.3s;
 }
-
-.succes{
-    border: solid 1px rgb(0, 255, 128);
-    transition: 0.4s;
+.correcto{
+    border: solid 1px #14ee14;
+    transition: 0.3s;
 }
