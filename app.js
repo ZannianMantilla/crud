@@ -3,6 +3,7 @@ import is_number from "./modulos/is_number.js";
 import letras from "./modulos/letras.js";
 import remover from "./modulos/remover.js";
 import is_valid from "./modulos/is_valid.js";
+import solicitud from "./modulos/ajax.js";
 
 const $formulario = document.querySelector("form");
 const nombre = document.querySelector("#nombre");
@@ -40,8 +41,13 @@ const documentos = () =>{
     });
 }
 
+const listar = () =>{
+    solicitud("users");
+}
+
 addEventListener("DOMContentLoaded", (event)=>{
     documentos()
+    listar()
     if (!politicas.checked) {
         boton.setAttribute("disable","");
     }
