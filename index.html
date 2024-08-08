@@ -7,14 +7,15 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="container layout mt-40 mb-40">
     <form class="form" novalidate>
         <div class="form__group">
             <label for="Nombre">Nombre</label>
-            <input  id="nombre" autocomplete="off"> 
+            <input  id="nombre" autocomplete="off" required> 
         </div>
         <div class="form__group">
             <label for="Apellidos">Apellidos</label>
-            <input  id="apellidos" autocomplete="off">
+            <input  id="apellidos" autocomplete="off" required>
         </div>
         <label for="telefono">Telefono</label>
         <input type="number" id="telefono" autocomplete="off" required>
@@ -29,11 +30,10 @@
         <input type="text" id="documento" autocomplete="off" required>
 
         <label for="tipo-documento">Tipo De Documento</label>
-        <select name="tipo" id="tipo" required>
-        </select>
+        <select name="tipo" id="tipo" required></select>
 
         <div>
-            <input type="checkbox" id="politicas" required>   
+            <input type="checkbox" id="politicas">   
             <label for="politicas">
                 Acepta las politicas de uso
             </label>
@@ -42,6 +42,32 @@
         <button type="summit" id="boton">Enviar</button>
         
     </form>
+    <div class="table">
+        <table>
+            <thead>
+                <th>Nombre</th>
+                <th>Apelido</th>
+                <th>Telefono</th>
+                <th>Direccion</th>
+                <th>Email</th>
+                <th>Documento</th>
+                <th>Tipo</th>
+            </thead>
+                <tbody></tbody>
+        </table>
+    </div>
+</div>
+<template id="tpUsers">
+    <tr>
+        <td class="nombre"></td>
+        <td class="apellido"></td>
+        <td class="telefono"></td>
+        <td class="direccion"></td>
+        <td class="email"></td>
+        <td class="documento"></td>
+        <td class="tipo"></td>
+    </tr>
+</template>
     <script src="app.js" type="module"></script>
 </body>
 </html>

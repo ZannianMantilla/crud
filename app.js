@@ -4,18 +4,23 @@ import letras from "./modulos/letras.js";
 import remover from "./modulos/remover.js";
 import is_valid from "./modulos/is_valid.js";
 import solicitud from "./modulos/ajax.js";
+import { URL } from "./modulos/config.js";
 
 const $formulario = document.querySelector("form");
 const nombre = document.querySelector("#nombre");
 const apellidos = document.querySelector("#apellidos");
 const telefono = document.querySelector("#telefono");
 const direccion = document.querySelector("#direccion");
-const tipo = document.querySelector("#tipo");
 const documento = document.querySelector("#documento");
+const tipo = document.querySelector("#tipo");
 const politicas = document.querySelector("#politicas");
 const correo = document.querySelector(  "#email");
 const boton = document.querySelector("#boton");
+const tbUsers = document.querySelector("#tpUsers").content;
+const fragmento = document.createDocumentFragment();
+const tbody = document.querySelector("tbody");
 
+console.log(tbUsers);
 
 const cantidad = (elemento) => {
     let valor = elemento.value.length === 10;
@@ -30,28 +35,63 @@ const documentos = () =>{
     fetch('http://localhost:3000/documents')
     .then((response) => response.json())
     .then((data) => {
+        let option = document.createElement("option");
+        option.textContent = "Seleccione...";
+        fragmento.appendChild(option);
+        option.value = ""
         data.forEach(element => {
-            console.log(element);
             let option = document.createElement("option");
             option.value = element.id;
             option.textContent = element.name;
             fragmento.appendChild(option)
         });
-        tipo.appendChild(fragmento)
+        tipo.appendChild(fragmento);
     });
 }
 
-const listar = () =>{
-    solicitud("users");
+const listar = async () => {
+    const data = await solicitud("users");
+    data.forEach(element => {
+        tbUsers.querySelector(".nombre").textContent = element.first_name;
+        tbUsers.querySelector(".apellido").textContent = element.last_name;
+        tbUsers.querySelector(".telefono").textContent = element.phone;
+        tbUsers.querySelector(".direccion").textContent = element.address;
+        tbUsers.querySelector(".email").textContent = element.email;
+        tbUsers.querySelector(".documento").textContent = element.document;
+        tbUsers.querySelector(".tipo").textContent = element.type_id;
+        const clone = document.importNode(tbUsers, true)
+        fragmento.appendChild(clone);
+    })
+    tbody.appendChild(fragmento)
 }
 
-addEventListener("DOMContentLoaded", (event)=>{
+const createRow = (data) => {
+    const tr = tbody.insertRow(-1);
+    const tdNombre = tr.insertCell(0);
+    const tdApellido = tr.insertCell(1);
+    const tdTelefono = tr.insertCell(2);
+    const tdDireccion = tr.insertCell(3);
+    const tdEmail = tr.insertCell(4);
+    const tdDocumento = tr.insertCell(5);
+    const tdTipo = tr.insertCell(6);
+
+    tdNombre.textContent = data.first_name;
+    tdApellido.textContent = data.last_name;
+    tdTelefono.textContent = data.phone;
+    tdDireccion.textContent = data.address;
+    tdEmail.textContent = data.email;
+    tdDocumento.textContent = data.document;
+    tdTipo.textContent = data.type_id;
+}
+
+addEventListener("DOMContentLoaded", (event) => {
     documentos()
     listar()
     if (!politicas.checked) {
-        boton.setAttribute("disable","");
+        boton.setAttribute("disabled","");
     }
 });
+
 politicas.addEventListener("change", function(e){
     console.log(e.target.checked);
     if (e.target.checked) {
@@ -59,19 +99,20 @@ politicas.addEventListener("change", function(e){
     }
 });
 
-$formulario.addEventListener("submit" , (event)=>{
+$formulario.addEventListener("submit", (event)=>{
     let response = is_valid(event, "form [required]");
     if (response) {
         const data ={
             first_name: nombre.value,
-            last_name: tipo.value,
+            last_name: apellidos.value,
             address: direccion.value,
-            type_id: tipo.value,
             email: correo.value,
             phone: telefono.value,
             document: documento.value,
+            type_id: tipo.value,
         }
-        fetch('http://localhost:3000/users',{
+
+        fetch(`${URL}/users`,{
             method: "POST",
             body: JSON.stringify(data),
             headers: {
@@ -82,12 +123,14 @@ $formulario.addEventListener("submit" , (event)=>{
         .then((json) =>{
             nombre.value="";
             apellidos.value="";
-            direccion.value="";
+            direccion.value=""; 
             telefono.value="";
             tipo.value="";
             documento.value="";
             correo.value="";
             politicas.checked = false;
+            createRow(json)
+            
         })
     }else{
         alert("Rellena Los Campos")
@@ -121,4 +164,8 @@ direccion.addEventListener("blur", (event) => {
 });
 documento.addEventListener("blur", (event)=> {
     remover(event, documento);
+});
+
+tipo.addEventListener("blur", (event) => {
+    remover(event, tipo);
 });
