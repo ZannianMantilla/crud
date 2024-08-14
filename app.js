@@ -3,7 +3,7 @@ import is_number from "./modulos/is_number.js";
 import letras from "./modulos/letras.js";
 import remover from "./modulos/remover.js";
 import is_valid from "./modulos/is_valid.js";
-import solicitud from "./modulos/ajax.js";
+import solicitud, { enviar } from "./modulos/ajax.js";
 import { URL } from "./modulos/config.js";
 
 const $formulario = document.querySelector("form");
@@ -19,8 +19,6 @@ const boton = document.querySelector("#boton");
 const tbUsers = document.querySelector("#tpUsers").content;
 const fragmento = document.createDocumentFragment();
 const tbody = document.querySelector("tbody");
-
-console.log(tbUsers);
 
 const cantidad = (elemento) => {
     let valor = elemento.value.length === 10;
@@ -51,7 +49,9 @@ const documentos = () =>{
 
 const listar = async () => {
     const data = await solicitud("users");
+    const documentos = await solicitud("documents");
     data.forEach(element => {
+        let nombre = documentos.find((docuemnto) => docuemnto.id === element.type_id).name;
         tbUsers.querySelector(".nombre").textContent = element.first_name;
         tbUsers.querySelector(".apellido").textContent = element.last_name;
         tbUsers.querySelector(".telefono").textContent = element.phone;
@@ -59,6 +59,8 @@ const listar = async () => {
         tbUsers.querySelector(".email").textContent = element.email;
         tbUsers.querySelector(".documento").textContent = element.document;
         tbUsers.querySelector(".tipo").textContent = element.type_id;
+        tbUsers.querySelector(".modificar").setAttribute("data-id", element.id)
+        tbUsers.querySelector(".eliminar").setAttribute("data-id", element.id)
         const clone = document.importNode(tbUsers, true)
         fragmento.appendChild(clone);
     })
@@ -82,6 +84,19 @@ const createRow = (data) => {
     tdEmail.textContent = data.email;
     tdDocumento.textContent = data.document;
     tdTipo.textContent = data.type_id;
+
+}
+
+const buscar = (element) => {
+    console.log(element.dataset.id);
+    enviar(`users/${element.dataset.id}`, {
+        method: "PATH",
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+    }).then((data) => {
+        console.log(data);
+    });
 }
 
 addEventListener("DOMContentLoaded", (event) => {
@@ -89,6 +104,12 @@ addEventListener("DOMContentLoaded", (event) => {
     listar()
     if (!politicas.checked) {
         boton.setAttribute("disabled","");
+    }
+});
+
+document.addEventListener("click", (e) =>{
+    if(e.target.matches(".modificar")){
+        buscar(e.target); 
     }
 });
 
@@ -111,7 +132,6 @@ $formulario.addEventListener("submit", (event)=>{
             document: documento.value,
             type_id: tipo.value,
         }
-
         fetch(`${URL}/users`,{
             method: "POST",
             body: JSON.stringify(data),
@@ -136,6 +156,7 @@ $formulario.addEventListener("submit", (event)=>{
         alert("Rellena Los Campos")
     }
 });
+
 nombre.addEventListener("keypress", (event) => {
     remover(event, nombre);
 });
