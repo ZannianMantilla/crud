@@ -9,6 +9,7 @@
 <body>
     <div class="container layout mt-40 mb-40">
     <form class="form" novalidate>
+        <input type="hidden" id="user">
         <div class="form__group">
             <label for="Nombre">Nombre</label>
             <input  id="nombre" autocomplete="off" required> 
@@ -58,7 +59,7 @@
     </div>
 </div>
 <template id="tpUsers">
-    <tr>
+    <tr id="trUsers">
         <td class="nombre"></td>
         <td class="apellido"></td>
         <td class="telefono"></td>
@@ -68,8 +69,8 @@
         <td class="tipo"></td>
         <td>
             <div>
-                <button class="modificar">Modificar</button>
-                <button class="eliminar">Eliminar</button>
+                <button class="modificar">modificar</button>
+                <button class="eliminar">eliminar</button>
             </div>
         </td>
     </tr>

@@ -19,6 +19,8 @@ const boton = document.querySelector("#boton");
 const tbUsers = document.querySelector("#tpUsers").content;
 const fragmento = document.createDocumentFragment();
 const tbody = document.querySelector("tbody");
+const id = document.querySelector("#user")
+const trUsers = document.querySelector("#trUsers")
 
 const cantidad = (elemento) => {
     let valor = elemento.value.length === 10;
@@ -27,7 +29,6 @@ const cantidad = (elemento) => {
         elemento.classList.add("correcto")
     }
 }
-
 const documentos = () =>{
     const fragmento = document.createDocumentFragment();
     fetch('http://localhost:3000/documents')
@@ -51,14 +52,14 @@ const listar = async () => {
     const data = await solicitud("users");
     const documentos = await solicitud("documents");
     data.forEach(element => {
-        let nombre = documentos.find((docuemnto) => docuemnto.id === element.type_id).name;
+        let nombre = documentos.find((docuemento) => docuemento.id === element.type_id).name;
         tbUsers.querySelector(".nombre").textContent = element.first_name;
         tbUsers.querySelector(".apellido").textContent = element.last_name;
         tbUsers.querySelector(".telefono").textContent = element.phone;
         tbUsers.querySelector(".direccion").textContent = element.address;
         tbUsers.querySelector(".email").textContent = element.email;
         tbUsers.querySelector(".documento").textContent = element.document;
-        tbUsers.querySelector(".tipo").textContent = element.type_id;
+        tbUsers.querySelector(".tipo").textContent = nombre;
         tbUsers.querySelector(".modificar").setAttribute("data-id", element.id)
         tbUsers.querySelector(".eliminar").setAttribute("data-id", element.id)
         const clone = document.importNode(tbUsers, true)
@@ -84,19 +85,91 @@ const createRow = (data) => {
     tdEmail.textContent = data.email;
     tdDocumento.textContent = data.document;
     tdTipo.textContent = data.type_id;
-
 }
 
-const buscar = (element) => {
-    console.log(element.dataset.id);
-    enviar(`users/${element.dataset.id}`, {
-        method: "PATH",
+const buscar = async (element) => {
+    const data = await enviar(`users/${element.dataset.id}`, {
+        method: "PATCH",
         headers: {
             'Content-type': 'application/json; charset=UTF-8',
         },
-    }).then((data) => {
-        console.log(data);
     });
+    loadForm(data)
+}
+
+const save = (event) => {
+    let response = is_valid(event, "form [required]");
+    const data ={
+        first_name: nombre.value,
+        last_name: apellidos.value,
+        address: direccion.value,
+        email: correo.value,
+        phone: telefono.value,
+        document: documento.value,
+        type_id: tipo.value,
+    }
+    if (response) {
+        if (user.value === "") {
+            guardar(data)
+        } else {
+            actualizar(data)
+        }
+    }
+}
+
+const guardar = (data) => {
+    console.log(data);
+    
+    return
+    fetch(`${URL}/users`,{
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+    })
+    .then((response) => response.json())
+    .then((json) => {
+        //codigo
+        nombre.value = "";
+        createRow(json)            
+    });
+}
+
+const actualizar = async(data) => {
+    const response = await enviar(`users/${user.value}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+    });
+    nombre.value="";
+    console.log(response);
+}
+
+const loadForm = (data) => {
+    const {
+        id,
+        first_name,
+        last_name,
+        phone,
+        address,
+        type_id,
+        document,
+        email
+    } = data;
+
+    user.value = id;
+    nombre.value = first_name;
+    apellidos.value = last_name;
+    telefono.value = phone;
+    direccion.value = address;
+    correo.value = email;
+    documento.value = document;
+    tipo.value = type_id;
+    politicas.checked = true;
+    boton.removeAttribute('disabled')
 }
 
 addEventListener("DOMContentLoaded", (event) => {
@@ -120,42 +193,7 @@ politicas.addEventListener("change", function(e){
     }
 });
 
-$formulario.addEventListener("submit", (event)=>{
-    let response = is_valid(event, "form [required]");
-    if (response) {
-        const data ={
-            first_name: nombre.value,
-            last_name: apellidos.value,
-            address: direccion.value,
-            email: correo.value,
-            phone: telefono.value,
-            document: documento.value,
-            type_id: tipo.value,
-        }
-        fetch(`${URL}/users`,{
-            method: "POST",
-            body: JSON.stringify(data),
-            headers: {
-                'Content-type': 'application/json; charset=UTF-8',
-            },
-        })
-        .then((response) => response.json())
-        .then((json) =>{
-            nombre.value="";
-            apellidos.value="";
-            direccion.value=""; 
-            telefono.value="";
-            tipo.value="";
-            documento.value="";
-            correo.value="";
-            politicas.checked = false;
-            createRow(json)
-            
-        })
-    }else{
-        alert("Rellena Los Campos")
-    }
-});
+$formulario.addEventListener("submit", save);
 
 nombre.addEventListener("keypress", (event) => {
     remover(event, nombre);
