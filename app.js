@@ -20,7 +20,6 @@ const tbUsers = document.querySelector("#tpUsers").content;
 const fragmento = document.createDocumentFragment();
 const tbody = document.querySelector("tbody");
 const id = document.querySelector("#user")
-const trUsers = document.querySelector("#trUsers")
 
 const cantidad = (elemento) => {
     let valor = elemento.value.length === 10;
@@ -29,6 +28,7 @@ const cantidad = (elemento) => {
         elemento.classList.add("correcto")
     }
 }
+
 const documentos = () =>{
     const fragmento = document.createDocumentFragment();
     fetch('http://localhost:3000/documents')
@@ -53,6 +53,8 @@ const listar = async () => {
     const documentos = await solicitud("documents");
     data.forEach(element => {
         let nombre = documentos.find((docuemento) => docuemento.id === element.type_id).name;
+        tbUsers.querySelector("tr").id = `user_${element.id}`;
+        
         tbUsers.querySelector(".nombre").textContent = element.first_name;
         tbUsers.querySelector(".apellido").textContent = element.last_name;
         tbUsers.querySelector(".telefono").textContent = element.phone;
@@ -118,9 +120,6 @@ const save = (event) => {
 }
 
 const guardar = (data) => {
-    console.log(data);
-    
-    return
     fetch(`${URL}/users`,{
         method: "POST",
         body: JSON.stringify(data),
@@ -130,8 +129,7 @@ const guardar = (data) => {
     })
     .then((response) => response.json())
     .then((json) => {
-        //codigo
-        nombre.value = "";
+        limpiarform()
         createRow(json)            
     });
 }
@@ -144,13 +142,42 @@ const actualizar = async(data) => {
             'Content-type': 'application/json; charset=UTF-8',
         },
     });
+    //Limpiar formulario
+    limpiarform()
+    //Modificar TR
+    editRow(response);
+}
+
+const limpiarform = () => {
     nombre.value="";
-    console.log(response);
+    apellidos.value="";
+    telefono.value="";
+    direccion.value="";
+    correo.value="";
+    documento.value="";
+    tipo.value="";
+    politicas.checked = false;
+    boton.setAttribute('disabled', "")
+}
+
+
+const editRow = async (data) => {
+    const documentos = await solicitud("documents");
+    let nombre = documentos.find((docuemento) => docuemento.id === data.type_id).name;
+    const tr = document.querySelector(`#user_${data.id}`);
+    tr.querySelector(".nombre").textContent = data.first_name
+    tr.querySelector(".apellido").textContent = data.last_name
+    tr.querySelector(".telefono").textContent = data.phone
+    tr.querySelector(".direccion").textContent = data.address
+    tr.querySelector(".email").textContent = data.email
+    tr.querySelector(".documento").textContent = data.document
+    tr.querySelector(".tipo").textContent = nombre
+    console.log(tr);
 }
 
 const loadForm = (data) => {
     const {
-        id,
+        id, 
         first_name,
         last_name,
         phone,
@@ -180,11 +207,27 @@ addEventListener("DOMContentLoaded", (event) => {
     }
 });
 
-document.addEventListener("click", (e) =>{
-    if(e.target.matches(".modificar")){
-        buscar(e.target); 
+document.addEventListener("click", (e) => {
+    if (e.target.matches(".modificar")) {
+      buscar(e.target);
     }
-});
+    if (e.target.matches(".eliminar")) {
+      eliminar(e.target);
+    }
+  });   
+  
+  const eliminar = (e) => {
+    fetch(`${URL}/users`,{
+      method: 'DELETE',
+      body: JSON.stringify(data),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+    })
+    .then((response) => response.json())
+    .then((json) => {          
+    });
+  }
 
 politicas.addEventListener("change", function(e){
     console.log(e.target.checked);

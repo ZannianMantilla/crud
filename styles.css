@@ -29,8 +29,16 @@
 }
 
 .table{
-
+    
 }
+
+td{
+    border: solid 1px gray;
+    text-align: center;
+    padding: 5px;   
+}
+
+
 
 form{
     background-color: #f2f2f2;
