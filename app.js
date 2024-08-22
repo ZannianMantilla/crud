@@ -48,10 +48,30 @@ const documentos = () =>{
     });
 }
 
-const listar = async () => {
-    const data = await solicitud("users");
+const listar = async (page) => {
+    const _page = page ? page : 4;
+    const data = await solicitud(`users?_page=${_page}&_per_page=8`);
     const documentos = await solicitud("documents");
-    data.forEach(element => {
+
+    const nav = document.querySelector(".navigation");
+
+    const first = data.first;
+    const prev = data.prev;
+    const next = data.next;
+    const last = data.last;
+
+    nav.querySelector(".first").disabled = first ? false : true;
+    nav.querySelector(".prev").disabled = prev ? false: true;
+    nav.querySelector(".next").disabled = next ? false: true;
+    nav.querySelector(".last").disabled = last ? false: true;
+
+    nav.querySelector(".first").setAttribute("data-first", first) 
+    nav.querySelector(".prev").setAttribute("data-prev", prev)
+    nav.querySelector(".next").setAttribute("data-next", next)
+    nav.querySelector(".last").setAttribute("data-last", last)
+    console.log(nav);
+
+    data.data.forEach(element => {
         let nombre = documentos.find((docuemento) => docuemento.id === element.type_id).name;
         tbUsers.querySelector("tr").id = `user_${element.id}`;
         
@@ -175,6 +195,22 @@ const editRow = async (data) => {
     console.log(tr);
 }
 
+const eliminar = async (element) => {
+    let id = element.dataset.id;
+    const tr = document.querySelector(`#user_${id}`)
+    const username = tr.querySelector(".nombre").textContent;
+    const confirmDelete = confirm(`Desea eliminar a: ${username}?`)
+    if (confirmDelete) {
+    const response = await enviar(`users/${id}`,{
+        method: 'DELETE',
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+    });
+    console.log(response);
+}
+}
+
 const loadForm = (data) => {
     const {
         id, 
@@ -207,27 +243,51 @@ addEventListener("DOMContentLoaded", (event) => {
     }
 });
 
-document.addEventListener("click", (e) => {
+document.addEventListener("click", async (e) => {
     if (e.target.matches(".modificar")) {
       buscar(e.target);
     }
-    if (e.target.matches(".eliminar")) {
-      eliminar(e.target);
+
+    if(e.target.matches(".eliminar")){
+        eliminar(e.target);
     }
-  });   
-  
-  const eliminar = (e) => {
-    fetch(`${URL}/users`,{
-      method: 'DELETE',
-      body: JSON.stringify(data),
-        headers: {
-            'Content-type': 'application/json; charset=UTF-8',
-        },
-    })
-    .then((response) => response.json())
-    .then((json) => {          
-    });
-  }
+
+    if(e.target.matches(".first")){
+        const nodos = tbody;
+        const first = e.target.dataset.first;
+        while (nodos.firstChild) {
+            nodos.removeChild(nodos.firstChild);
+        }
+        listar(first)
+    }
+
+    if(e.target.matches(".prev")){
+        const nodos = tbody;
+        const prev = e.target.dataset.prev;
+        while (nodos.firstChild) {
+            nodos.removeChild(nodos.firstChild);
+        }
+        listar(prev)
+    }
+
+    if(e.target.matches(".next")){
+        const nodos = tbody;
+        const next = e.target.dataset.next;
+        while (nodos.firstChild) {
+            nodos.removeChild(nodos.firstChild);
+        }
+        listar(next)
+    }
+
+    if(e.target.matches(".last")){
+        const nodos = tbody;
+        const last = e.target.dataset.last;
+        while (nodos.firstChild) {
+            nodos.removeChild(nodos.firstChild);
+        }
+        listar(last)
+    }
+});   
 
 politicas.addEventListener("change", function(e){
     console.log(e.target.checked);
